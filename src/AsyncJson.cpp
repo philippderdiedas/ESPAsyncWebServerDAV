@@ -120,20 +120,19 @@ void AsyncCallbackJsonWebHandler::handleRequest(AsyncWebServerRequest *request) 
     }
     // this is not a GET
     // check if body is too large, if it is, don't parse
-    if (request->contentLength() > _maxContentLength)
-    {
+    if (request->contentLength() > _maxContentLength) {
       request->send(413);
       return;
     }
 
     // try to parse body as JSON
-    if (request->_tempObject != NULL)
-    {
-      size_t dataSize = min(request->contentLength(), request->_tempSize); // smaller value of contentLength or the size of the buffer. normally those should match.
+    if (request->_tempObject != NULL) {
+      size_t dataSize =
+        min(request->contentLength(), request->_tempSize);  // smaller value of contentLength or the size of the buffer. normally those should match.
 #if ARDUINOJSON_VERSION_MAJOR == 5
       DynamicJsonBuffer jsonBuffer;
-      uint8_t * p = (uint8_t *)(request->_tempObject);
-      p[dataSize] = '\0'; // null terminate, assume we allocated one extra char
+      uint8_t *p = (uint8_t *)(request->_tempObject);
+      p[dataSize] = '\0';  // null terminate, assume we allocated one extra char
       // parse can only get null terminated strings as parameters
       JsonVariant json = jsonBuffer.parse(p);
       if (json.success()) {
@@ -156,32 +155,29 @@ void AsyncCallbackJsonWebHandler::handleRequest(AsyncWebServerRequest *request) 
     }
     // there is no body, no buffer or we had an error parsing the body
     request->send(400);
-  } else { // if no _onRequest
+  } else {  // if no _onRequest
     request->send(500);
   }
 }
 
 void AsyncCallbackJsonWebHandler::handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
   if (_onRequest) {
-    if (total > 0 && request->_tempObject == NULL && total < _maxContentLength) { // if request content length is valid size and we have no content buffer yet
-      request->_tempObject = malloc(total + 1); // allocate one additional byte so we can null terminate this buffer (needed for ArduinoJson 5)
-      if (request->_tempObject == NULL) { // if allocation failed
+    if (total > 0 && request->_tempObject == NULL && total < _maxContentLength) {  // if request content length is valid size and we have no content buffer yet
+      request->_tempObject = malloc(total + 1);  // allocate one additional byte so we can null terminate this buffer (needed for ArduinoJson 5)
+      if (request->_tempObject == NULL) {        // if allocation failed
 #ifdef ESP32
         log_e("Failed to allocate");
 #endif
         request->abort();
         return;
       }
-      request->_tempSize = total; // store the size of allocation we made into _tempSize
+      request->_tempSize = total;  // store the size of allocation we made into _tempSize
     }
     if (request->_tempObject != NULL) {
       // check if the buffer is the right size so we don't write out of bounds
-      if (request->_tempSize >= total)
-      {
+      if (request->_tempSize >= total) {
         memcpy((uint8_t *)(request->_tempObject) + index, data, len);
-      }
-      else
-      {
+      } else {
 #ifdef ESP32
         log_e("Bad size of temp buffer");
 #endif
