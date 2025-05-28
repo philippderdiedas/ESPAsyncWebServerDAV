@@ -163,7 +163,7 @@ void AsyncCallbackJsonWebHandler::handleRequest(AsyncWebServerRequest *request) 
     }
     // there is no body, no buffer or we had an error parsing the body
     request->send(400);
-  } else { // if no _onRequest
+  } else {  // if no _onRequest
     request->send(500);
   }
 }
