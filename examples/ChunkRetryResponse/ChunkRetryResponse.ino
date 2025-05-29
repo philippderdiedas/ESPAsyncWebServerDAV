@@ -131,9 +131,17 @@ void setup() {
     "/api", HTTP_POST,
     [](AsyncWebServerRequest *request) {
       // request parsing has finished
+      String *data = (String *)request->_tempObject;
+
+      if (!data) {
+        request->send(400);
+        return;
+      }
 
       // no data ?
-      if (!((String *)request->_tempObject)->length()) {
+      if (!data->length()) {
+        delete data;
+        request->_tempObject = nullptr;
         request->send(400);
         return;
       }
@@ -141,10 +149,15 @@ void setup() {
       JsonDocument doc;
 
       // deserialize and check for errors
-      if (deserializeJson(doc, *(String *)request->_tempObject)) {
+      if (deserializeJson(doc, *data)) {
+        delete data;
+        request->_tempObject = nullptr;
         request->send(400);
         return;
       }
+
+      delete data;
+      request->_tempObject = nullptr;
 
       // start UART com: UART will send the data to the Serial console and wait for the key press
       triggerUART = doc["input"].as<const char *>();
