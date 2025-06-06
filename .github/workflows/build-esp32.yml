@@ -133,6 +133,7 @@ jobs:
           - esp32-c3-devkitc-02
           - esp32-c6-devkitc-1
           - esp32-h2-devkitm-1
+          - esp32-p4
 
     steps:
       - name: Checkout
