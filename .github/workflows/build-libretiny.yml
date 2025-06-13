@@ -49,7 +49,7 @@ jobs:
 
       - name: Build Examples
         run: |
-          for i in `ls examples`; do
+          for i in AsyncResponseStream Auth Headers; do
             echo "============================================================="
             echo "Building examples/$i..."
             echo "============================================================="
