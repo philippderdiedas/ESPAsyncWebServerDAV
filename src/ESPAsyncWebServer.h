@@ -203,6 +203,7 @@ class AsyncWebServerRequest {
   using FS = fs::FS;
   friend class AsyncWebServer;
   friend class AsyncCallbackWebHandler;
+  friend class AsyncFileResponse;
 
 private:
   AsyncClient *_client;
@@ -273,6 +274,8 @@ private:
 
   void _send();
   void _runMiddlewareChain();
+
+  static void _getEtag(uint8_t trailer[4], char *serverETag);
 
 public:
   File _tempFile;
@@ -386,13 +389,7 @@ public:
     send(beginResponse(code, contentType, content, len, callback));
   }
 
-  void send(FS &fs, const String &path, const char *contentType = asyncsrv::empty, bool download = false, AwsTemplateProcessor callback = nullptr) {
-    if (fs.exists(path) || (!download && fs.exists(path + asyncsrv::T__gz))) {
-      send(beginResponse(fs, path, contentType, download, callback));
-    } else {
-      send(404);
-    }
-  }
+  void send(FS &fs, const String &path, const char *contentType = asyncsrv::empty, bool download = false, AwsTemplateProcessor callback = nullptr);
   void send(FS &fs, const String &path, const String &contentType, bool download = false, AwsTemplateProcessor callback = nullptr) {
     send(fs, path, contentType.c_str(), download, callback);
   }
