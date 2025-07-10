@@ -619,14 +619,13 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t *data, size
  * File Response
  * */
 
-
 /**
  * @brief Sets the content type based on the file path extension
- * 
+ *
  * This method determines the appropriate MIME content type for a file based on its
  * file extension. It supports both external content type functions (if available)
  * and an internal mapping of common file extensions to their corresponding MIME types.
- * 
+ *
  * @param path The file path string from which to extract the extension
  * @note The method modifies the internal _contentType member variable
  */
@@ -639,7 +638,7 @@ void AsyncFileResponse::_setContentTypeFromPath(const String &path) {
 #endif
   _contentType = getContentType(path);
 #else
-const char *cpath = path.c_str();
+  const char *cpath = path.c_str();
   const char *dot = strrchr(cpath, '.');
 
   if (!dot) {
@@ -686,7 +685,6 @@ const char *cpath = path.c_str();
   }
 #endif
 }
-
 
 /**
  * @brief Constructor for AsyncFileResponse that handles file serving with compression support
