@@ -619,6 +619,17 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t *data, size
  * File Response
  * */
 
+
+/**
+ * @brief Sets the content type based on the file path extension
+ * 
+ * This method determines the appropriate MIME content type for a file based on its
+ * file extension. It supports both external content type functions (if available)
+ * and an internal mapping of common file extensions to their corresponding MIME types.
+ * 
+ * @param path The file path string from which to extract the extension
+ * @note The method modifies the internal _contentType member variable
+ */
 void AsyncFileResponse::_setContentTypeFromPath(const String &path) {
 #if HAVE_EXTERN_GET_Content_Type_FUNCTION
 #ifndef ESP8266
@@ -628,47 +639,54 @@ void AsyncFileResponse::_setContentTypeFromPath(const String &path) {
 #endif
   _contentType = getContentType(path);
 #else
-  if (path.endsWith(T__html)) {
+const char *cpath = path.c_str();
+  const char *dot = strrchr(cpath, '.');
+
+  if (!dot) {
+    _contentType = T_text_plain;
+    return;
+  }
+
+  if (strcmp(dot, T__html) == 0 || strcmp(dot, T__htm) == 0) {
     _contentType = T_text_html;
-  } else if (path.endsWith(T__htm)) {
-    _contentType = T_text_html;
-  } else if (path.endsWith(T__css)) {
+  } else if (strcmp(dot, T__css) == 0) {
     _contentType = T_text_css;
-  } else if (path.endsWith(T__json)) {
-    _contentType = T_application_json;
-  } else if (path.endsWith(T__js)) {
+  } else if (strcmp(dot, T__js) == 0) {
     _contentType = T_application_javascript;
-  } else if (path.endsWith(T__png)) {
+  } else if (strcmp(dot, T__json) == 0) {
+    _contentType = T_application_json;
+  } else if (strcmp(dot, T__png) == 0) {
     _contentType = T_image_png;
-  } else if (path.endsWith(T__gif)) {
-    _contentType = T_image_gif;
-  } else if (path.endsWith(T__jpg)) {
-    _contentType = T_image_jpeg;
-  } else if (path.endsWith(T__ico)) {
+  } else if (strcmp(dot, T__ico) == 0) {
     _contentType = T_image_x_icon;
-  } else if (path.endsWith(T__svg)) {
+  } else if (strcmp(dot, T__svg) == 0) {
     _contentType = T_image_svg_xml;
-  } else if (path.endsWith(T__eot)) {
-    _contentType = T_font_eot;
-  } else if (path.endsWith(T__woff)) {
-    _contentType = T_font_woff;
-  } else if (path.endsWith(T__woff2)) {
+  } else if (strcmp(dot, T__jpg) == 0) {
+    _contentType = T_image_jpeg;
+  } else if (strcmp(dot, T__gif) == 0) {
+    _contentType = T_image_gif;
+  } else if (strcmp(dot, T__woff2) == 0) {
     _contentType = T_font_woff2;
-  } else if (path.endsWith(T__ttf)) {
+  } else if (strcmp(dot, T__woff) == 0) {
+    _contentType = T_font_woff;
+  } else if (strcmp(dot, T__ttf) == 0) {
     _contentType = T_font_ttf;
-  } else if (path.endsWith(T__xml)) {
+  } else if (strcmp(dot, T__eot) == 0) {
+    _contentType = T_font_eot;
+  } else if (strcmp(dot, T__xml) == 0) {
     _contentType = T_text_xml;
-  } else if (path.endsWith(T__pdf)) {
+  } else if (strcmp(dot, T__pdf) == 0) {
     _contentType = T_application_pdf;
-  } else if (path.endsWith(T__zip)) {
+  } else if (strcmp(dot, T__zip) == 0) {
     _contentType = T_application_zip;
-  } else if (path.endsWith(T__gz)) {
+  } else if (strcmp(dot, T__gz) == 0) {
     _contentType = T_application_x_gzip;
   } else {
     _contentType = T_text_plain;
   }
 #endif
 }
+
 
 /**
  * @brief Constructor for AsyncFileResponse that handles file serving with compression support
