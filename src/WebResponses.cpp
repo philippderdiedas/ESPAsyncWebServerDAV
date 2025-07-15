@@ -734,7 +734,7 @@ AsyncFileResponse::AsyncFileResponse(FS &fs, const String &path, const char *con
     }
   }
 
-  if (*contentType != '\0') {
+  if (*contentType == '\0') {
     _setContentTypeFromPath(path);
   } else {
     _contentType = contentType;
@@ -745,11 +745,11 @@ AsyncFileResponse::AsyncFileResponse(FS &fs, const String &path, const char *con
     int filenameStart = path.lastIndexOf('/') + 1;
     char buf[26 + path.length() - filenameStart];
     char *filename = (char *)path.c_str() + filenameStart;
-    snprintf_P(buf, sizeof(buf), PSTR("attachment; filename=\"%s\""), filename);
+    snprintf(buf, sizeof(buf), T_attachment, filename);
     addHeader(T_Content_Disposition, buf, false);
   } else {
     // Serve file inline (display in browser)
-    addHeader(T_Content_Disposition, PSTR("inline"), false);
+    addHeader(T_Content_Disposition, T_inline, false);
   }
 
   _code = 200;
