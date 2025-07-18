@@ -680,6 +680,8 @@ void AsyncFileResponse::_setContentTypeFromPath(const String &path) {
     _contentType = T_text_xml;
   } else if (strcmp(dot, T__pdf) == 0) {
     _contentType = T_application_pdf;
+  } else if (strcmp(dot, T__mp4) == 0) {
+    _contentType = T_video_mp4;
   } else if (strcmp(dot, T__zip) == 0) {
     _contentType = T_application_zip;
   } else if (strcmp(dot, T__gz) == 0) {
