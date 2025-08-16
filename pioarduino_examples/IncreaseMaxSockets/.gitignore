@@ -9,3 +9,4 @@
 /dependencies.lock
 /.dummy
 /managed_components
+/src/idf_component.yml
