@@ -69,11 +69,12 @@ void AsyncWebServerRequest::send(FS &fs, const String &path, const char *content
 bool AsyncWebServerRequest::_getEtag(File gzFile, char *etag) {
   static constexpr char hexChars[] = "0123456789ABCDEF";
 
-  if (!gzFile.seek(gzFile.size() - 8))
+  if (!gzFile.seek(gzFile.size() - 8)) {
     return false;
+  }
 
   uint32_t crc;
-  gzFile.read(reinterpret_cast<uint8_t*>(&crc), sizeof(crc));
+  gzFile.read(reinterpret_cast<uint8_t *>(&crc), sizeof(crc));
 
   etag[0] = hexChars[(crc >> 4) & 0x0F];
   etag[1] = hexChars[crc & 0x0F];
