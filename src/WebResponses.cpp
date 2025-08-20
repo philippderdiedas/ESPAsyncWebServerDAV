@@ -699,29 +699,23 @@ AsyncFileResponse::AsyncFileResponse(FS &fs, const String &path, const char *con
 
   // Try to open the uncompressed version first
   _content = fs.open(path, fs::FileOpenMode::read);
-  if (_content.available()) {
-    _contentLength = _content.size();
-  } else {
-    // Try to open the compressed version (.gz)
+  if (!_content.available()) {
+    // If not available try to open the compressed version (.gz)
     String gzPath;
     uint16_t pathLen = path.length();
     gzPath.reserve(pathLen + 3);
     gzPath.concat(path);
     gzPath.concat(asyncsrv::T__gz);
     _content = fs.open(gzPath, fs::FileOpenMode::read);
-    _contentLength = _content.size();
 
-    if (_content.seek(_contentLength - 8)) {
+    char serverETag[9];
+    if (AsyncWebServerRequest::_getEtag(_content, serverETag)) {
       addHeader(T_Content_Encoding, T_gzip, false);
       _callback = nullptr;  // Unable to process zipped templates
       _sendContentLength = true;
       _chunked = false;
 
       // Add ETag and cache headers
-      uint8_t crcInTrailer[4];
-      _content.read(crcInTrailer, sizeof(crcInTrailer));
-      char serverETag[9];
-      AsyncWebServerRequest::_getEtag(crcInTrailer, serverETag);
       addHeader(T_ETag, serverETag, true);
       addHeader(T_Cache_Control, T_no_cache, true);
 
@@ -732,6 +726,8 @@ AsyncFileResponse::AsyncFileResponse(FS &fs, const String &path, const char *con
       return;
     }
   }
+
+  _contentLength = _content.size();
 
   if (*contentType == '\0') {
     _setContentTypeFromPath(path);
