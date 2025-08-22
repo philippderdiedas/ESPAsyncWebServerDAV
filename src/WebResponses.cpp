@@ -764,22 +764,23 @@ AsyncFileResponse::AsyncFileResponse(File content, const String &path, const cha
   _content = content;
   _contentLength = _content.size();
 
-  if (strlen(contentType) == 0) {
+  if (*contentType == '\0') {
     _setContentTypeFromPath(path);
   } else {
     _contentType = contentType;
   }
 
-  int filenameStart = path.lastIndexOf('/') + 1;
-  char buf[26 + path.length() - filenameStart];
-  char *filename = (char *)path.c_str() + filenameStart;
-
   if (download) {
-    snprintf_P(buf, sizeof(buf), PSTR("attachment; filename=\"%s\""), filename);
+    // Extract filename from path and set as download attachment
+    int filenameStart = path.lastIndexOf('/') + 1;
+    char buf[26 + path.length() - filenameStart];
+    char *filename = (char *)path.c_str() + filenameStart;
+    snprintf(buf, sizeof(buf), T_attachment, filename);
+    addHeader(T_Content_Disposition, buf, false);
   } else {
-    snprintf_P(buf, sizeof(buf), PSTR("inline"));
+    // Serve file inline (display in browser)
+    addHeader(T_Content_Disposition, T_inline, false);
   }
-  addHeader(T_Content_Disposition, buf, false);
 }
 
 size_t AsyncFileResponse::_fillBuffer(uint8_t *data, size_t len) {
