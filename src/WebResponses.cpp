@@ -639,8 +639,8 @@ void AsyncFileResponse::_setContentTypeFromPath(const String &path) {
     _contentType = T_text_html;
   } else if (strcmp(dot, T__css) == 0) {
     _contentType = T_text_css;
-  } else if (strcmp(dot, T__js) == 0) {
-    _contentType = T_application_javascript;
+  } else if (strcmp(dot, T__js) == 0 || strcmp(dot, T__mjs) == 0) {
+    _contentType = T_text_javascript;
   } else if (strcmp(dot, T__json) == 0) {
     _contentType = T_application_json;
   } else if (strcmp(dot, T__png) == 0) {
