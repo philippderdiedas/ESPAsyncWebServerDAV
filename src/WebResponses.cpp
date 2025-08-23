@@ -738,9 +738,12 @@ AsyncFileResponse::AsyncFileResponse(FS &fs, const String &path, const char *con
   if (download) {
     // Extract filename from path and set as download attachment
     int filenameStart = path.lastIndexOf('/') + 1;
-    char buf[26 + path.length() - filenameStart];
-    char *filename = (char *)path.c_str() + filenameStart;
-    snprintf(buf, sizeof(buf), T_attachment, filename);
+    const char *filename = path.c_str() + filenameStart;
+    String buf;
+    buf.reserve(strlen(T_attachment) + strlen(filename) + 2);
+    buf  = T_attachment;
+    buf += filename;
+    buf += "\"";
     addHeader(T_Content_Disposition, buf, false);
   } else {
     // Serve file inline (display in browser)
@@ -773,9 +776,12 @@ AsyncFileResponse::AsyncFileResponse(File content, const String &path, const cha
   if (download) {
     // Extract filename from path and set as download attachment
     int filenameStart = path.lastIndexOf('/') + 1;
-    char buf[26 + path.length() - filenameStart];
-    char *filename = (char *)path.c_str() + filenameStart;
-    snprintf(buf, sizeof(buf), T_attachment, filename);
+    const char *filename = path.c_str() + filenameStart;
+    String buf;
+    buf.reserve(strlen(T_attachment) + strlen(filename) + 2);
+    buf  = T_attachment;
+    buf += filename;
+    buf += "\"";
     addHeader(T_Content_Disposition, buf, false);
   } else {
     // Serve file inline (display in browser)
