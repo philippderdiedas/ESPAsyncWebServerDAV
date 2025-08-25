@@ -741,7 +741,7 @@ AsyncFileResponse::AsyncFileResponse(FS &fs, const String &path, const char *con
     const char *filename = path.c_str() + filenameStart;
     String buf;
     buf.reserve(strlen(T_attachment) + strlen(filename) + 2);
-    buf  = T_attachment;
+    buf = T_attachment;
     buf += filename;
     buf += "\"";
     addHeader(T_Content_Disposition, buf, false);
@@ -779,7 +779,7 @@ AsyncFileResponse::AsyncFileResponse(File content, const String &path, const cha
     const char *filename = path.c_str() + filenameStart;
     String buf;
     buf.reserve(strlen(T_attachment) + strlen(filename) + 2);
-    buf  = T_attachment;
+    buf = T_attachment;
     buf += filename;
     buf += "\"";
     addHeader(T_Content_Disposition, buf, false);
